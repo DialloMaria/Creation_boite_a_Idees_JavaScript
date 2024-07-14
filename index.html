@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boîte à Idées</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1, h2 {
+            color: #ce0033;
+            text-align: center;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .form-control, .form-select, textarea {
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background-color: #ce0033;
+            border-color: #ce0033;
+        }
+
+        .btn-primary:hover {
+            background-color: #a30028;
+            border-color: #a30028;
+        }
+
+        .alert {
+            display: none;
+        }
+
+        .table-container {
+            margin-top: 50px;
+        }
+        .error-message{
+            color: #ce0033;
+        }
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .card {
+            flex: 0 0 18%; /* Adjust this value to fit 5 cards per row with some spacing */
+            margin: 10px 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 15px;
+        }
+        .card-title {
+            color: #ce0033;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .card-text {
+            margin-bottom: 10px;
+        }
+        .delete-icon {
+            color: #ce0033;
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Boîte à Idées</h1>
+    <div id="error-message" class="alert alert-danger"></div>
+    <div id="success-message" class="alert alert-success">
+        Idée ajoutée avec succès !
+    </div>
+    <form id="ideaForm">
+        <div class="row">
+            <div class="col-6">
+                <label for="libelle" class="form-label">Libellé</label>
+                <input type="text" class="form-control" id="libelle" name="libelle" >
+                <span class="error-message" id="error-libelle"></span>
+            </div>
+            <div class="col-6 ">
+                <label for="categorie" class="form-label">Catégorie</label>
+                <select class="form-select" id="categorie" name="categorie" >
+                    <option value="">Sélectionner une catégorie</option>
+                    <option value="politique">Politique</option>
+                    <option value="sport">Sport</option>
+                    <option value="sante">Santé</option>
+                    <option value="education">Éducation</option>
+                    <option value="autre">Autre</option>
+                </select>
+                <span class="error-message" id="error-categorie"></span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" ></textarea>
+            <span class="error-message" id="error-description"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter Idée</button>
+    </form>
+</div>
+
+    <div class="row card-row" id="cardsContainer">
+        <!-- Les cartes seront ajoutées ici -->
+        <div class="card">
+            <div class="card-body">
+                <span class="delete-icon">&times;</span>
+                <h5 class="card-title">Libellé</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Catégorie</h6>
+                <p class="card-text">Description</p>
+                <button class="btn btn-primary">Action</button>
+            </div>
+        </div>
+    </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="validation.js"></script>
+</body>
+</html>
