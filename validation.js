@@ -103,7 +103,7 @@ function validation() {
     const form = document.getElementById('ideaForm');
 
     // Tableau pour stocker les idées
-   let ideas = JSON.parse(localStorage.getItem('ideas')) || [];
+    let ideas = JSON.parse(localStorage.getItem('ideas')) || [];
 
     form.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -112,6 +112,8 @@ function validation() {
         const libelle = document.getElementById("libelle").value.trim();
         const categorie = document.getElementById("categorie").value;
         const description = document.getElementById("description").value.trim();
+        // const counter = document.getElementById('char-counter');
+        // const maxLenght = description.getAttribute('maxlength');
 
         let isValid = true;
 
@@ -120,10 +122,20 @@ function validation() {
         document.getElementById('error-categorie').textContent = '';
         document.getElementById('error-description').textContent = '';
 
+        const regexNoDigitsOrSpecialChars = /^[a-zA-Z\s]+$/; 
+        const regexNoHTML = /<\/?[^>]+(>|$)/g; 
+
         // Validation des champs libelle
         if (libelle === '') {
             isValid = false;
             document.getElementById('error-libelle').textContent = 'Veuillez saisir votre libellé.';
+        }
+         else if (!regexNoDigitsOrSpecialChars.test(libelle)) {
+            isValid = false;
+            document.getElementById('error-libelle').textContent = 'Le libellé ne doit pas contenir de chiffres ou de caractères spéciaux.';
+        } else if (regexNoHTML.test(libelle)) {
+            isValid = false;
+            document.getElementById('error-libelle').textContent = 'Le libellé ne doit pas contenir de balises HTML.';
         } else if (libelle.length < 10) {
             isValid = false;
             document.getElementById('error-libelle').textContent = 'Votre libellé doit contenir au moins 10 caractères.';
@@ -142,7 +154,14 @@ function validation() {
         if (description === '') {
             isValid = false;
             document.getElementById('error-description').textContent = 'Veuillez saisir votre description.';
-        } else if (description.length < 100) {
+        } 
+        else if (!regexNoDigitsOrSpecialChars.test(description)) {
+            isValid = false;
+            document.getElementById('error-description').textContent = 'La description ne doit pas contenir de chiffres ou de caractères spéciaux.';
+        } else if (regexNoHTML.test(description)) {
+            isValid = false;
+            document.getElementById('error-description').textContent = 'La description ne doit pas contenir de balises HTML.';
+        }else if (description.length < 100) {
             isValid = false;
             document.getElementById('error-description').textContent = 'Votre description doit contenir au moins 100 caractères.';
         } else if (description.length > 255) {
@@ -153,8 +172,9 @@ function validation() {
         // Si le formulaire est valide, ajouter l'idée
         if (isValid) {
             // Ajout de la nouvelle idée au tableau
-            const newIdea = { libelle, categorie, description }; // Création d'un objet idée
+            const newIdea = { libelle, categorie, description, approved: false }; // Création d'un objet idée
             ideas.push(newIdea); // Ajout de l'idée au tableau
+            localStorage.setItem('ideas', JSON.stringify(ideas)); // Mettre à jour le localStorage
             renderCards(); // Mise à jour de l'affichage des cartes
 
             // Affichage du message de succès
@@ -179,16 +199,28 @@ function validation() {
 
         ideas.forEach((idea, index) => {
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = `card ${idea.approved ? 'border-success' : 'border-danger'}`;
             card.innerHTML = `
+
+            <style> 
+            .danger{
+            color:red;
+            }
+            .success{
+            color:green;
+            }
+            </style>
                 <div class="card-body">
                     <span class="delete-icon" data-index="${index}">&times;</span>
                     <h5 class="card-title">${idea.libelle}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">${idea.categorie}</h6>
                     <p class="card-text">${idea.description}</p>
                 </div>
-                <button class="btn btn-${idea.approved ? 'danger' : 'success'} btn-sm" onclick="toggleApproval(${index})">${idea.approved ? 'Désapprouver' : 'Approuver'}</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteIdea(${index})">Supprimer</button>
+                <div class="card-actions">
+                    <i   class="fas approve-icon ${idea.approved ? 'danger' : 'success'}" onclick="toggleApproval(${index})">${idea.approved ? '<i class="fas fa-thumbs-down"></i>' : '<i class="fas fa-thumbs-up"></i>'}</i>
+                    <i class="fas fa-trash delete-icon" onclick="deleteIdea(${index})"></i>
+                </div>
+              
             `;
             cardsContainer.appendChild(card);
         });
@@ -203,6 +235,7 @@ function validation() {
             });
         });
     }
+
     // Initialiser l'affichage des cartes avec les idées stockées
     renderCards();
 
@@ -219,4 +252,19 @@ function validation() {
         localStorage.setItem('ideas', JSON.stringify(ideas)); // Mettre à jour le localStorage
         renderCards(); // Met à jour l'affichage des cartes
     };
+    // Écouteur d'événement pour mettre à jour le compteur de caractères
+    description.addEventListener('input', e => {
+        const maxLength = 255;
+        const currentLength = e.target.value.length;
+
+        const leftCharLength = maxLength - currentLength;
+
+        if (leftCharLength < 0) return;
+
+        // Mise à jour du texte du compteur avec la valeur actuelle et le total
+        document.getElementById('char-counter').innerText = `${currentLength}/${maxLength}`;
+    });
+
 }
+
+
